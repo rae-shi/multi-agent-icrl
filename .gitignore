@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.pyc
+*.egg-info/
+
+# Virtual environments 
+venv/
+venv_modern/
+venv_pogema/
+.venv/
+
+# Cloned third-party env repos
+scripts/env_clones/
+
+# SLURM job output
+logs/*.out
+
+# Stray plot output if a script is run without --out-dir from the repo root
+# (generated plots that ARE meant to be kept belong in docs/baseline_plots/)
+/*.png
+
+.DS_Store
