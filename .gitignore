@@ -20,3 +20,4 @@ logs/*.out
 /*.png
 
 .DS_Store
+*.out
