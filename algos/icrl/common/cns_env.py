@@ -80,7 +80,13 @@ def make_train_env(env_id, config_path, save_dir, group='PPO', base_seed=0, num_
                     seed=base_seed)
            for i in range(num_threads)]
 
-    env = vec_env.SubprocVecEnv(env)  # use multi-process running
+    if 'MultiGoal' in env_id and env_id.endswith('Pair-v0'):
+        # two-row adapter: one simulation -> two rows (one per agent); repo root must be on PYTHONPATH
+        from envs.wrappers.safety_multigoal_pair import make_pair_vec_env
+        env = make_pair_vec_env(env_id, num_threads=num_threads, base_seed=base_seed, log_dir=save_dir,
+                                parallel=True)
+    else:
+        env = vec_env.SubprocVecEnv(env)  # use multi-process running
 
     if use_cost:  # add external cost wrapper for reading cost info
         if group == 'PPO-Lag' or group == 'PI-Lag':
@@ -139,7 +145,12 @@ def make_eval_env(env_id, config_path, save_dir, group='PPO', num_threads=1,
                     multi_env=multi_env)
            for i in range(num_threads)]
 
-    env = vec_env.DummyVecEnv(env)  # use single-process running
+    if 'MultiGoal' in env_id and env_id.endswith('Pair-v0'):
+        from envs.wrappers.safety_multigoal_pair import make_pair_vec_env
+        env = make_pair_vec_env(env_id, num_threads=num_threads, base_seed=0,
+                                log_dir=os.path.join(save_dir, mode), parallel=False)
+    else:
+        env = vec_env.DummyVecEnv(env)  # use single-process running
 
     if use_cost:
         if group == 'PPO-Lag' or group == 'PI-Lag':
