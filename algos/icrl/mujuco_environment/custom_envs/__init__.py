@@ -428,3 +428,17 @@ register(
     reward_threshold=None,
     nondeterministic=False,
 )
+
+# =========================================================================== #
+#        Safety-Gymnasium MultiGoal (joint-action adapter, multi-agent-icrl)   #
+# =========================================================================== #
+# The adapter lives in the multi-agent-icrl repo (envs/wrappers); the repo root must be on
+# PYTHONPATH so that the subprocesses created by SubprocVecEnv can import it.
+
+for _level in (1, 2):
+    register(
+        id="SafetyAntMultiGoal{0}Joint-v0".format(_level),
+        entry_point="envs.wrappers.safety_multigoal_joint:SafetyMultiGoalJoint",
+        kwargs={"level": _level},
+        nondeterministic=False,
+    )
