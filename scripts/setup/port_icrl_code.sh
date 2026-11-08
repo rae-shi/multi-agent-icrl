@@ -2,9 +2,9 @@
 # Port the code we build on from the OFFICIAL ICRL-benchmarks-public repo into algos/icrl/.
 #
 # Usage (from anywhere):
-#   bash scripts/port_icrl_code.sh                 # pinned commit below
-#   COMMIT=<hash> bash scripts/port_icrl_code.sh   # a different upstream commit
-#   FORCE=1 bash scripts/port_icrl_code.sh         # overwrite an existing algos/icrl
+#   bash scripts/setup/port_icrl_code.sh                 # pinned commit below
+#   COMMIT=<hash> bash scripts/setup/port_icrl_code.sh   # a different upstream commit
+#   FORCE=1 bash scripts/setup/port_icrl_code.sh         # overwrite an existing algos/icrl
 #
 # Steps:
 #   1. clone the official repo from GitHub and check out the pinned commit

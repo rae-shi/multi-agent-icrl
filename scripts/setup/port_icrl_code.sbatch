@@ -10,4 +10,4 @@
 set -euo pipefail
 
 cd "$HOME/projects/def-s2ganapa/raeshi/multi-agent-icrl"
-bash scripts/port_icrl_code.sh
+bash scripts/setup/port_icrl_code.sh
