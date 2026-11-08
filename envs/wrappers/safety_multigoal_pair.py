@@ -1,6 +1,6 @@
 """Two-row (per-agent) adapter: Safety-Gymnasium MultiGoal for the ICRL benchmark code.
 
-Design (decided with the professor): independent per-agent constraints, ONE shared policy.
+Design: independent per-agent constraints, ONE shared policy.
 Both agents get the same action space, observation space, reward function and cost function
 (only the goal colour differs), so one network can act for both; a 2-d one-hot agent id is
 appended to the observation so it knows which agent it is acting for.
