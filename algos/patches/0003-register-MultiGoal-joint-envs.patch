@@ -1,0 +1,22 @@
+diff --git a/mujuco_environment/custom_envs/__init__.py b/mujuco_environment/custom_envs/__init__.py
+index 5780fa9..bfc2a68 100644
+--- a/mujuco_environment/custom_envs/__init__.py
++++ b/mujuco_environment/custom_envs/__init__.py
+@@ -428,3 +428,17 @@ register(
+     reward_threshold=None,
+     nondeterministic=False,
+ )
++
++# =========================================================================== #
++#        Safety-Gymnasium MultiGoal (joint-action adapter, multi-agent-icrl)   #
++# =========================================================================== #
++# The adapter lives in the multi-agent-icrl repo (envs/wrappers); the repo root must be on
++# PYTHONPATH so that the subprocesses created by SubprocVecEnv can import it.
++
++for _level in (1, 2):
++    register(
++        id="SafetyAntMultiGoal{0}Joint-v0".format(_level),
++        entry_point="envs.wrappers.safety_multigoal_joint:SafetyMultiGoalJoint",
++        kwargs={"level": _level},
++        nondeterministic=False,
++    )

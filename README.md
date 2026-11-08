@@ -47,11 +47,6 @@ Safety-Gymnasium is not part of `screen_env.py`; it has its own probes (run in
 `venv_safety` with `MUJOCO_GL=egl`):
 
 | Script | Checks |
-|---|---|
-| `scripts/test_safety_multigoal.py` | env builds and steps; shape of rewards, costs and info |
-| `scripts/test_contact_other.py` | whether `cost_contact_other` fires under random actions |
-| `scripts/test_contact_diagnose.py` | identifies the two ants from the MuJoCo model and compares real contacts with the cost key |
-| `scripts/test_ant_collision_masks.py` | whether the two ants can physically collide |
 
 ```bash
 python scripts/test_safety_multigoal.py SafetyAntMultiGoal2-v0 300

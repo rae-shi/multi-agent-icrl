@@ -1,0 +1,23 @@
+diff --git a/common/cns_evaluation.py b/common/cns_evaluation.py
+index bc05437..473e585 100644
+--- a/common/cns_evaluation.py
++++ b/common/cns_evaluation.py
+@@ -47,7 +47,8 @@ def evaluate_icrl_policy(
+         will be returned instead of the mean.
+     """
+     if isinstance(env, VecEnv):
+-        assert env.num_envs == 1, "You must pass only one environment when using this function"
++        # one simulation: 1 env, or the 2 rows (one per agent) of a two-row env; its rows end together
++        assert env.num_envs in (1, 2), "You must pass only one simulation when using this function"
+ 
+     episode_rewards, episode_nc_rewards, episode_lengths = [], [], []
+     costs = []
+@@ -63,7 +64,7 @@ def evaluate_icrl_policy(
+         episode_nc_reward = np.asarray([0.0] * env.num_envs)
+         is_constraint = [False for i in range(env.num_envs)]
+         episode_length = 0
+-        while not done:
++        while not np.all(done):
+             action, state = model.predict(obs, state=state, deterministic=deterministic)
+             obs, reward, done, _info = env.step(action)
+             if 'admissible_actions' in _info[0].keys():

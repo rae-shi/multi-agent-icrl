@@ -21,3 +21,6 @@ logs/*.out
 
 .DS_Store
 *.out
+
+# runs
+runs/

@@ -1,0 +1,13 @@
+diff --git a/utils/env_utils.py b/utils/env_utils.py
+index 1cecbc7..bed7b05 100644
+--- a/utils/env_utils.py
++++ b/utils/env_utils.py
+@@ -96,6 +96,8 @@ class MujocoExternalSignalWrapper(gym.Wrapper):
+ 
+     def step(self, action: np.ndarray) -> Tuple[np.ndarray, float, bool, Dict[Any, Any]]:
+         obs, reward, done, info = self.env.step(action)
++        if 'lag_cost' in info:  # the environment supplies its own ground-truth violation flag
++            return obs, reward, done, info
+         ture_cost_function = get_true_cost_function(env_id=self.spec.id,
+                                                     env_configs=self.wrapper_config)
+         lag_cost_ture = int(ture_cost_function(obs, action) == True)

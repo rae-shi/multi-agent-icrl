@@ -1,0 +1,54 @@
+diff --git a/common/cns_sampler.py b/common/cns_sampler.py
+index 241c940..95e4f03 100644
+--- a/common/cns_sampler.py
++++ b/common/cns_sampler.py
+@@ -70,7 +70,9 @@ class ConstrainedRLSampler:
+ 
+     def single_thread_sample_with_policy(self):
+         if isinstance(self.env, vec_env.VecEnv):
+-            assert self.env.num_envs == 1, "You must pass only one environment when using this function"
++            # one simulation: 1 env, or the 2 rows (one per agent) of a two-row env; its rows end together
++            assert self.env.num_envs in (1, 2), "You must pass only one simulation when using this function"
++        rows = self.env.num_envs
+         all_orig_obs, all_obs, all_acs, all_rs = [], [], [], []
+         sum_rewards, lengths = [], []
+         for i in range(self.rollouts):
+@@ -86,7 +88,7 @@ class ConstrainedRLSampler:
+             obs_game = []
+             acs_game = []
+             rs_game = []
+-            while not done:
++            while not np.all(done):
+                 action, state = self.policy_agent.predict(obs, state=state, deterministic=False)
+                 origin_obs_game.append(self.env.get_original_obs())
+                 obs_game.append(obs)
+@@ -105,17 +107,19 @@ class ConstrainedRLSampler:
+                 episode_sum_reward += reward
+                 episode_length += 1
+             if self.store_by_game:
+-                origin_obs_game = np.squeeze(np.array(origin_obs_game), axis=1)
+-                obs_game = np.squeeze(np.array(obs_game), axis=1)
+-                acs_game = np.squeeze(np.array(acs_game), axis=1)
+-                rs_game = np.squeeze(np.asarray(rs_game))
+-                all_orig_obs.append(origin_obs_game)
+-                all_obs.append(obs_game)
+-                all_acs.append(acs_game)
+-                all_rs.append(rs_game)
++                origin_obs_game = np.array(origin_obs_game)  # (T, rows, dim)
++                obs_game = np.array(obs_game)
++                acs_game = np.array(acs_game)
++                rs_game = np.asarray(rs_game).reshape(len(obs_game), rows)  # (T, rows)
++                for r in range(rows):  # one trajectory per row, i.e. per agent
++                    all_orig_obs.append(origin_obs_game[:, r])
++                    all_obs.append(obs_game[:, r])
++                    all_acs.append(acs_game[:, r])
++                    all_rs.append(rs_game[:, r])
+ 
+-            sum_rewards.append(episode_sum_reward)
+-            lengths.append(episode_length)
++            for r in range(rows):
++                sum_rewards.append(episode_sum_reward[r:r + 1])
++                lengths.append(episode_length)
+ 
+         # if self.store_by_game:
+         return all_orig_obs, all_obs, all_acs, all_rs, sum_rewards, lengths
