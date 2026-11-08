@@ -4,7 +4,7 @@
 Run it as a job, from the repo root, with the repo root and algos/icrl on PYTHONPATH:
 
     export PYTHONPATH="$PWD:$PWD/algos/icrl:$PYTHONPATH"
-    srun --account=def-s2ganapa --time=00:15:00 --mem=4G python scripts/smoke_test_adapter.py
+    srun --account=def-s2ganapa --time=00:15:00 --mem=4G python scripts/smoke/smoke_test_adapter.py
 
 Optional argument: the env id (default SafetyAntMultiGoal1Joint-v0).
 

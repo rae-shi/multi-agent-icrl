@@ -6,7 +6,7 @@ into the copied code under algos/icrl and collects every third-party import it c
 So one run shows all missing packages, instead of one ModuleNotFoundError per attempt.
 
 Usage (inside the venv you want to check):
-    python scripts/check_icrl_imports.py [algos/icrl] [entry.py ...]
+    python scripts/env_checks/check_icrl_imports.py [algos/icrl] [entry.py ...]
 
 Default entries: interface/train_policy.py, interface/train_icrl.py, interface/train_gail.py
 Needs Python 3.10+.
