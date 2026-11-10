@@ -18,7 +18,7 @@ export OMP_NUM_THREADS=1 MKL_NUM_THREADS=1   # 2.6x faster in the profile
 
 SEEDS=(123 321 456 654 666)
 SEED=${SEEDS[$SLURM_ARRAY_TASK_ID]}
-CFG=configs/multigoal/train_ppo_lag_SafetyAntMultiGoal1Pair-v0.yaml
+CFG=${CFG:-configs/multigoal/train_ppo_lag_SafetyAntMultiGoal1Pair-v0.yaml}   # override: CFG=path sbatch ...
 
 echo "commit: $(git rev-parse HEAD)"
 git status --short | head -5
