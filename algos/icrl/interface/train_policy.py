@@ -99,6 +99,7 @@ def train(args):
                                             cost_info_str=config['env']['cost_info_str'],
                                             reward_gamma=config['env']['reward_gamma'],
                                             cost_gamma=config['env']['cost_gamma'],
+                                            fall_penalty=config['env'].get('fall_penalty', 0.0),
                                             log_file=log_file,
                                             part_data=partial_data,
                                             multi_env=multi_env,

@@ -56,7 +56,7 @@ class SafetyMultiGoalPair(gym.Env):
     """One Safety-Gymnasium MultiGoal simulation, flattened for the old-gym vector envs."""
     metadata = {"render.modes": []}
 
-    def __init__(self, level=1, inner_env=None):
+    def __init__(self, level=1, inner_env=None, fall_penalty=0.0):
         created_here = inner_env is None
         if created_here:
             # headless MuJoCo rendering (needed on the cluster; subprocess workers inherit this)
@@ -66,6 +66,7 @@ class SafetyMultiGoalPair(gym.Env):
             inner_env = safety_gymnasium.make("SafetyAntMultiGoal{0}-v0".format(level))
         self._env = inner_env
         self.level = level
+        self._fall_penalty = float(fall_penalty)   # reward penalty when the episode ends by a fall
         self._seed_for_next_reset = None
         self._require_contact_switch = created_here
 
@@ -158,13 +159,17 @@ class SafetyMultiGoalPair(gym.Env):
         obs, rewards, costs, terminated, truncated, _ = self._env.step(joint)
 
         flat = self._rows(self._check_shared(obs))
+        term = any(bool(terminated[a]) for a in self.agents)
+        trunc = any(bool(truncated[a]) for a in self.agents)
+        fell = bool(term and not trunc)       # ended by termination (a fall), not by the 1000-step limit
         rows = []
         for a in self.agents:
             c = float(costs[a])
-            rows.append({"reward": float(rewards[a]), "cost": c, "lag_cost": int(c > 0)})
-        term = any(bool(terminated[a]) for a in self.agents)
-        trunc = any(bool(truncated[a]) for a in self.agents)
+            raw = float(rewards[a])
+            rows.append({"reward": raw - (self._fall_penalty if fell else 0.0), "reward_raw": raw,
+                         "cost": c, "lag_cost": int(c > 0)})
         info = {"rows": rows,
+                "fell": fell,
                 "cost": float(sum(r["cost"] for r in rows)),
                 "lag_cost": int(any(r["lag_cost"] for r in rows)),
                 "TimeLimit.truncated": bool(trunc and not term)}
@@ -277,7 +282,7 @@ class TwoRowVecEnv(VecEnvWrapper):
                 rewards[row] = ri["reward"]
                 info = {"cost": ri["cost"], "lag_cost": ri["lag_cost"],
                         "TimeLimit.truncated": sim_info.get("TimeLimit.truncated", False)}
-                self._monitor_step(row, ri["reward"], ri["lag_cost"])
+                self._monitor_step(row, ri.get("reward_raw", ri["reward"]), ri["lag_cost"])
                 if sim_dones[s]:
                     if terminal is not None:
                         info["terminal_observation"] = terminal[a]
@@ -293,7 +298,7 @@ class TwoRowVecEnv(VecEnvWrapper):
 
 
 def make_pair_vec_env(env_id, num_threads=1, base_seed=0, log_dir=None, parallel=True,
-                      env_factory=None, seed_fn=None, start_method=None):
+                      env_factory=None, seed_fn=None, start_method=None, fall_penalty=0.0):
     """Build the two-row vector env. ``parallel`` = SubprocVecEnv (training), else DummyVecEnv."""
     from stable_baselines3.common import vec_env as sb3_vec_env
     level = level_from_env_id(env_id)
@@ -303,7 +308,7 @@ def make_pair_vec_env(env_id, num_threads=1, base_seed=0, log_dir=None, parallel
 
     def make(rank):
         def _init():
-            env = env_factory() if env_factory is not None else SafetyMultiGoalPair(level=level)
+            env = env_factory() if env_factory is not None else SafetyMultiGoalPair(level=level, fall_penalty=fall_penalty)
             env.seed(base_seed + rank)
             return env
         return _init

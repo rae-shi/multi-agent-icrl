@@ -84,7 +84,7 @@ def make_train_env(env_id, config_path, save_dir, group='PPO', base_seed=0, num_
         # two-row adapter: one simulation -> two rows (one per agent); repo root must be on PYTHONPATH
         from envs.wrappers.safety_multigoal_pair import make_pair_vec_env
         env = make_pair_vec_env(env_id, num_threads=num_threads, base_seed=base_seed, log_dir=save_dir,
-                                parallel=True)
+                                parallel=True, fall_penalty=kwargs.get('fall_penalty', 0.0))
     else:
         env = vec_env.SubprocVecEnv(env)  # use multi-process running
 
