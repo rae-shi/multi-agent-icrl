@@ -1,0 +1,20 @@
+config: configs/multigoal/train_ppo_lag_MG1Pair_budget1p0.yaml
+commit: a5e3cb6226b810a80f95da83d528670317e10f30
+ M scripts/slurm/expert_ppo_lag.sbatch
+?? docs/results/
+?? expert_ppo_lag_config_3160973_123.yaml
+?? expert_ppo_lag_config_3296558_123.yaml
+?? expert_ppo_lag_config_4197959_123.yaml
+seed: 123  array task: 0  host: fc30609
+python: /home/raeshi/projects/def-s2ganapa/raeshi/venv_safety/bin/python
+3:task: 'PPO-Lag-MG1-Pair-budget1p0'
+22:  n_iters: 41
+34:  learning_rate: 0.00003
+35:  n_steps: 2048
+36:  n_epochs: 20
+58:  forward_timesteps: 200000           # counted in ROWS: 1 simulation step = 2 timesteps, so 200000 = 100000 simulation steps per iteration (revisit after profiling)
+61:  penalty_initial_value: 0.1
+62:  penalty_learning_rate: 0.05
+63:  budget: 1.0
+{
+    "task": "PPO-Lag-MG1-Pair-budget1p0",

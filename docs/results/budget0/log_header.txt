@@ -1,0 +1,20 @@
+commit: 90fa2243f1ebe35627058c2601fd4c99207a2e72
+?? pilot_unconstrained_config_3153738.yaml
+seed: 123  array task: 0  host: fc30554
+python: /home/raeshi/projects/def-s2ganapa/raeshi/venv_safety/bin/python
+22:  n_iters: 50
+35:  n_steps: 2048
+36:  n_epochs: 20
+58:  forward_timesteps: 200000           # counted in ROWS: 1 simulation step = 2 timesteps, so 200000 = 100000 simulation steps per iteration (revisit after profiling)
+63:  budget: 0                           # cost limit: 0, same as every upstream train_ppo_lag config
+{
+    "task": "PPO-Lag-MG1-Pair",
+    "group": "PPO-Lag",
+    "device": "cpu",
+    "verbose": 2,
+    "env": {
+        "config_path": null,
+        "train_env_id": "SafetyAntMultiGoal1Pair-v0",
+        "eval_env_id": "SafetyAntMultiGoal1Pair-v0",
+        "save_dir": "../../../runs",
+        "cost_info_str": "cost",

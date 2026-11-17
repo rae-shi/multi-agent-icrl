@@ -22,5 +22,8 @@ logs/*.out
 .DS_Store
 *.out
 
-# runs
+# Config files
+expert_ppo_lag_config_*.yaml
+pilot_*_config_*.yaml
+
 runs/
