@@ -11,6 +11,8 @@
 # Submit from the repo root:  sbatch scripts/slurm/pilot_unconstrained.sbatch
 set -eo pipefail
 cd "$SLURM_SUBMIT_DIR"
+module load StdEnv/2023 glfw/3.3.8
+export PYGLFW_LIBRARY=$(ls $EBROOTGLFW/lib*/libglfw.so* | head -1)
 source ~/projects/def-s2ganapa/raeshi/venv_safety/bin/activate
 export PYTHONPATH="$PWD:$PWD/algos/icrl:${PYTHONPATH:-}"
 export OMP_NUM_THREADS=1 MKL_NUM_THREADS=1   # 2.6x faster in the profile
