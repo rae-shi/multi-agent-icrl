@@ -11,6 +11,8 @@ venv_pogema/
 
 # Cloned third-party env repos
 scripts/env_clones/
+runs/scripts/setup/env_clones/
+scripts/setup/env_clones
 
 # SLURM job output
 logs/*.out
@@ -25,8 +27,6 @@ logs/*.out
 # Config files
 expert_ppo_lag_config_*.yaml
 pilot_*_config_*.yaml
-
-runs/scripts/setup/env_clones/
 
 # specific to the RORQUAL cluster
 runs/PPO-Lag-MG1-Pair-budget1p0

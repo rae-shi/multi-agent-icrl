@@ -46,6 +46,12 @@ def level_from_env_id(env_id):
     return int(env_id.split("MultiGoal")[1].replace(PAIR_SUFFIX, ""))
 
 
+def agent_from_env_id(env_id):
+    """'SafetyPointMultiGoal1Pair-v0' -> 'Point'; 'SafetyAntMultiGoal1Pair-v0' -> 'Ant'"""
+    head = env_id.split("MultiGoal")[0]
+    return head[len("Safety"):] if head.startswith("Safety") else head
+
+
 def _box(low, high):
     return spaces.Box(low=np.asarray(low, dtype=np.float32),
                       high=np.asarray(high, dtype=np.float32),
@@ -56,16 +62,17 @@ class SafetyMultiGoalPair(gym.Env):
     """One Safety-Gymnasium MultiGoal simulation, flattened for the old-gym vector envs."""
     metadata = {"render.modes": []}
 
-    def __init__(self, level=1, inner_env=None, fall_penalty=0.0):
+    def __init__(self, level=1, inner_env=None, fall_penalty=0.0, agent="Ant"):
         created_here = inner_env is None
         if created_here:
             # headless MuJoCo rendering (needed on the cluster; subprocess workers inherit this)
             os.environ.setdefault("MUJOCO_GL", "egl")
             os.environ.setdefault("PYOPENGL_PLATFORM", "egl")
             import safety_gymnasium  # lazy: only needed for the real environment
-            inner_env = safety_gymnasium.make("SafetyAntMultiGoal{0}-v0".format(level))
+            inner_env = safety_gymnasium.make("Safety{0}MultiGoal{1}-v0".format(agent, level))
         self._env = inner_env
         self.level = level
+        self.agent = agent
         self._fall_penalty = float(fall_penalty)   # reward penalty when the episode ends by a fall
         self._seed_for_next_reset = None
         self._require_contact_switch = created_here
@@ -302,13 +309,14 @@ def make_pair_vec_env(env_id, num_threads=1, base_seed=0, log_dir=None, parallel
     """Build the two-row vector env. ``parallel`` = SubprocVecEnv (training), else DummyVecEnv."""
     from stable_baselines3.common import vec_env as sb3_vec_env
     level = level_from_env_id(env_id)
+    agent = agent_from_env_id(env_id)
     if seed_fn is None:
         from stable_baselines3.common.utils import set_random_seed as seed_fn
     seed_fn(base_seed)
 
     def make(rank):
         def _init():
-            env = env_factory() if env_factory is not None else SafetyMultiGoalPair(level=level, fall_penalty=fall_penalty)
+            env = env_factory() if env_factory is not None else SafetyMultiGoalPair(level=level, fall_penalty=fall_penalty, agent=agent)
             env.seed(base_seed + rank)
             return env
         return _init
