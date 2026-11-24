@@ -12,7 +12,7 @@
 set -eo pipefail
 module load StdEnv/2023 glfw/3.3.8
 export PYGLFW_LIBRARY=$(ls $EBROOTGLFW/lib*/libglfw.so* | head -1)
-source ~/links/projects/def-s2ganapa/raeshi/venv_safety/bin/activate      # your actual venv path
+source ~/projects/def-s2ganapa/raeshi/venv_safety/bin/activate      # your actual venv path
 cd "$SLURM_SUBMIT_DIR"                 # repo root = where you ran sbatch
 
 export MUJOCO_GL=egl PYOPENGL_PLATFORM=egl
