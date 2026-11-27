@@ -9,7 +9,7 @@
 #   scripts/pipeline/archive_run_results.sh TAG JOBID RUN_DIR BUDGET EVAL_GLOB [--full-log]
 # Example:
 #   scripts/pipeline/archive_run_results.sh budget5p4 4197959 "$RUN54" 0.054 "runs/expert_data/b5p4_it*_n30"
-# Env: SEED (default 123), PLOT (default scripts/plots/plot_expert_run.py)
+# Env: SEED (default 123), PLOT (default scripts/plots/plot_expert_run.py), RANDOM_REF (random-policy violation rate per agent, fractions; default "0.048 0.167" = Ant)
 set -eo pipefail
 [ $# -ge 5 ] || { sed -n 2,13p "$0"; exit 1; }
 TAG=$1; JOB=$2; RUN=$3; BUDGET=$4; GLOB=$5; FULL=${6:-}
@@ -28,7 +28,7 @@ cp "$CFG" "$OUT/config_used.yaml"
 head -20 "$LOG" > "$OUT/log_header.txt"
 [ "$FULL" = "--full-log" ] && gzip -c "$LOG" > "$OUT/train_log.out.gz"
 
-python "$PLOT" --run-dir "$RUN" --log "$LOG" --eval-glob "$GLOB" \
+python "$PLOT" --random-ref ${RANDOM_REF:-0.048 0.167} --run-dir "$RUN" --log "$LOG" --eval-glob "$GLOB" \
   --out "$OUT/figures" --csv "$OUT/data" --tag "s${SEED}_${TAG}" --budget "$BUDGET" \
   --caption "30 episodes per checkpoint, 1 seed, deterministic actions"
 
